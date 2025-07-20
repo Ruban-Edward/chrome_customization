@@ -33,7 +33,48 @@ cd chrome_customization
 ```
 
 3. **Set it as your Chrome New Tab page**  
-Open Chrome and go to chrome://extensions/
-Enable Developer Mode
-Click Load unpacked and select the project folder
-This will set the custom page as your new tab
+   * Open Chrome and go to chrome://extensions/
+   * Enable Developer Mode
+   * Click Load unpacked and select the project folder
+   * This will set the custom page as your new tab
+  
+---
+
+## 📂 Folder Structure
+
+      chrome_customization/
+      ├── assets/           # Images, icons, and static resources
+      ├── css/              # Stylesheets
+      ├── js/               # JavaScript files
+      ├── index.html        # Main page
+      └── README.md         # Project documentation
+
+---
+
+## ✨ Customization
+
+   * Edit index.html to modify site links or layout
+   * Add your own icons or change styles in css/style.css
+   * For additional functionality, modify scripts in js/
+
+---
+
+## 📌 Tips
+
+   * Use meaningful icons for quick recognition
+   * Keep the layout minimal for better speed and focus
+   * Regularly update your links based on current needs
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! If you have ideas to improve this tool, feel free to fork and enhance it.
+
+---
+
+## 🧑‍💻 Author
+Ruban Edward
+
+## 📄 License
+This project is licensed under the MIT License.
