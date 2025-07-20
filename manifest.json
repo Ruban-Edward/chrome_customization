@@ -1,0 +1,9 @@
+{
+    "manifest_version": 3,
+    "name": "Custom Startup Page",
+    "version": "1.0",
+    "description": "A personalized startup page for Chrome.",
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    }
+}
