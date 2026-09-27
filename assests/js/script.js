@@ -280,10 +280,16 @@ function renderStockPanel() {
         const label = document.createElement('span');
         label.className = 'stock-symbol';
         label.textContent = symbol;
+        const values = document.createElement('span');
+        values.className = 'stock-values';
+        const price = document.createElement('span');
+        price.className = 'stock-price';
+        price.textContent = 'Loading...';
         const change = document.createElement('span');
         change.className = 'stock-change';
         change.textContent = 'Loading...';
-        row.append(label, change);
+        values.append(price, change);
+        row.append(label, values);
         stockList.appendChild(row);
     });
 }
@@ -348,15 +354,17 @@ async function refreshStockQuotes() {
         let availableQuotes = 0;
         [...stockList.children].forEach((row, index) => {
             const quote = quotes[index];
+            const price = row.querySelector('.stock-price');
             const change = row.querySelector('.stock-change');
             if (!quote) {
+                price.textContent = '-';
                 change.textContent = 'Unavailable';
                 change.classList.add('neutral');
                 return;
             }
             availableQuotes++;
+            price.textContent = quote.lastSalePrice;
             change.textContent = quote.percentageChange;
-            change.title = `Last sale: ${quote.lastSalePrice}`;
             const percentage = Number.parseFloat(quote.percentageChange);
             change.classList.add(percentage > 0 ? 'positive' : percentage < 0 ? 'negative' : 'neutral');
         });

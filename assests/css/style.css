@@ -323,6 +323,20 @@ body::before {
 .stock-symbol {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stock-values {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.stock-price {
+    color: rgba(247, 249, 253, 0.78);
+    white-space: nowrap;
 }
 
 .stock-change {
