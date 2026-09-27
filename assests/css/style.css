@@ -184,14 +184,19 @@ body::before {
     left: 24px;
     width: min(290px, calc(100vw - 48px));
     max-height: min(55vh, 430px);
-    padding: 1rem 1.1rem;
+    padding: 0.85rem 0.95rem;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     transform: translateY(-50%);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 8px;
-    background: rgba(12, 15, 19, 0.74);
+    border-left: 2px solid rgba(255, 255, 255, 0.52);
+    background: rgba(12, 15, 19, 0.56);
     text-align: left;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
+}
+
+.trending-news::-webkit-scrollbar {
+    display: none;
 }
 
 .trending-news[hidden] {
@@ -605,12 +610,28 @@ body::before {
         left: 12px;
         width: calc(50vw - 20px);
         max-height: 38vh;
+        padding: 0.65rem;
     }
 
     .stocks-panel {
         right: 12px;
+        left: auto;
         width: calc(50vw - 20px);
         max-height: 38vh;
+        padding: 0.65rem;
+    }
+
+    .stock-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .stock-values {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.25rem;
+        font-size: 10px;
     }
 }
 
