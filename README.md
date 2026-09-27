@@ -1,69 +1,64 @@
 # 🚀 Chrome Customization
 
-A simple and efficient setup to customize your Chrome experience by organizing commonly used websites, shortcuts, and tools all in one tab. This project enhances productivity by providing quick access to your everyday links with a clean, user-friendly interface.
+A custom Chrome New Tab page with quick links, current time and greeting, top news headlines, and a configurable stock watchlist.
 
 ---
 
 ## 🌟 Features
 
-- 🧭 **Quick Navigation**: Add and access your most visited websites with a single click.
-- 🎨 **Minimal Design**: Lightweight and aesthetically clean layout for distraction-free browsing.
-- 🧩 **Custom Shortcuts**: Easily configurable shortcuts for personal or work use.
-- 🌐 **Local First**: Designed to run locally as a custom new tab page for Chrome.
+- **Quick links**: Add, remove, and customize shortcuts, including names, URLs, and icons.
+- **Top headlines**: Shows up to five Google News headlines when the feed is available.
+- **Stock watchlist**: Track up to ten symbols with current value and percentage change. Quotes may be delayed; US listings use Nasdaq data and other supported listings fall back to Yahoo Finance.
+- **Search and clock**: Search with Google, Bing, or DuckDuckGo and view the current time, date, and greeting.
+- **Local preferences**: Shortcut and stock selections are saved in the browser's local storage.
 
 ---
 
-## 📸 Preview
+## 🛠️ Install in Chrome
 
-![screenshot](assets/screenshot.png)  
-*A glance at the home page layout (Update this image with your own preview).*
-
----
-
-## 🛠️ How to Use
-
-1. **Clone the repository**  
+1. Clone the repository and enter its directory:
    ```bash
    git clone https://github.com/Ruban-Edward/chrome_customization.git
+   cd chrome_customization
    ```
-   
-2. **Open the folder**  
-```bash
-cd chrome_customization
-```
 
-3. **Set it as your Chrome New Tab page**  
-   * Open Chrome and go to chrome://extensions/
-   * Enable Developer Mode
-   * Click Load unpacked and select the project folder
-   * This will set the custom page as your new tab
-  
+2. In Chrome, open `chrome://extensions/`.
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and select the `chrome_customization` project folder, the folder that contains `manifest.json`.
+5. Review and allow the requested site access for Google News and the quote providers if Chrome asks. These permissions are used to load headlines and stock quotes.
+6. Open a new tab. The extension overrides Chrome's default New Tab page.
+
+You do not select or install `manifest.json` by itself. Chrome reads it from the project folder when you choose **Load unpacked**. After changing `manifest.json`, click the extension's **Reload** button on `chrome://extensions/`, then refresh the New Tab page.
+
+For local development, you can also open `index.html` directly, but extension host permissions only apply when Chrome runs the page as an installed extension. Network-backed headlines and quotes may not load from a directly opened file.
 ---
 
 ## 📂 Folder Structure
 
       chrome_customization/
-      ├── assets/           # Images, icons, and static resources
-      ├── css/              # Stylesheets
-      ├── js/               # JavaScript files
-      ├── index.html        # Main page
+      ├── assests/
+      │   ├── css/          # Stylesheets
+      │   ├── img/          # Images and icons
+      │   └── js/           # Page behavior
+      ├── index.html        # New Tab page
+      ├── manifest.json     # Chrome extension configuration
       └── README.md         # Project documentation
 
 ---
 
 ## ✨ Customization
 
-   * Edit index.html to modify site links or layout
-   * Add your own icons or change styles in css/style.css
-   * For additional functionality, modify scripts in js/
+   * Use **Manage links** on the New Tab page to edit shortcuts.
+   * Use **Add stocks** or **Edit** in the Stocks panel to choose up to ten ticker symbols.
+   * Edit `assests/css/style.css` for styling and `assests/js/script.js` for behavior.
+   * Change extension metadata and requested host permissions in `manifest.json`.
 
 ---
 
 ## 📌 Tips
 
-   * Use meaningful icons for quick recognition
-   * Keep the layout minimal for better speed and focus
-   * Regularly update your links based on current needs
+   * Enter ticker symbols, not company names, in the stock watchlist (for example, `AAPL` or `WIPRO`).
+   * Headlines and stock quotes require an internet connection and can be unavailable if a provider is down or blocks requests.
 
 ---
 
