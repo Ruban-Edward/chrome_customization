@@ -7,6 +7,9 @@ const loaderOverlay = document.getElementById("loader-overlay");
 const imageContainer = document.getElementById("imageContainer");
 const shortcutDialog = document.getElementById("shortcutDialog");
 const shortcutList = document.getElementById("shortcutList");
+const trendingNews = document.getElementById("trendingNews");
+const trendingNewsList = document.getElementById("trendingNewsList");
+let isLoadingTrendingNews = false;
 
 const defaultShortcuts = [
     { src: 'assests/img/youtube.png', url: 'https://www.youtube.com/', text: 'YouTube' },
@@ -184,6 +187,62 @@ function renderShortcuts() {
     });
 }
 
+async function loadTrendingNews() {
+    if (isLoadingTrendingNews) return;
+    isLoadingTrendingNews = true;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try {
+        const response = await fetch('https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en', {
+            signal: controller.signal,
+            cache: 'no-store',
+            mode: 'cors'
+        });
+        if (!response.ok) {
+            trendingNews.hidden = true;
+            return;
+        }
+
+        const xml = new DOMParser().parseFromString(await response.text(), 'application/xml');
+        if (xml.querySelector('parsererror')) {
+            trendingNews.hidden = true;
+            return;
+        }
+
+        const stories = [...xml.querySelectorAll('item')].slice(0, 5).map(item => ({
+            title: item.querySelector('title')?.textContent.trim(),
+            url: validWebURL(item.querySelector('link')?.textContent.trim())
+        })).filter(story => story.title && story.url);
+
+        if (!stories.length) {
+            trendingNews.hidden = true;
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        stories.forEach(story => {
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = story.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = story.title;
+            item.appendChild(link);
+            fragment.appendChild(item);
+        });
+
+        trendingNewsList.replaceChildren(fragment);
+        trendingNews.hidden = false;
+    } catch {
+        trendingNews.hidden = true;
+    } finally {
+        clearTimeout(timeout);
+        isLoadingTrendingNews = false;
+    }
+}
+
 function appendShortcutRow(shortcut = {}) {
     const row = document.createElement('div');
     row.className = 'shortcut-row';
@@ -301,3 +360,11 @@ setInterval(updateClock, 1000);
 updateClock();
 updateDate();
 renderShortcuts();
+loadTrendingNews();
+window.addEventListener('online', loadTrendingNews);
+window.addEventListener('offline', () => {
+    trendingNews.hidden = true;
+});
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && trendingNews.hidden) loadTrendingNews();
+});

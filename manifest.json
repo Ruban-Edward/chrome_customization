@@ -3,6 +3,9 @@
     "name": "Custom Startup Page",
     "version": "1.0",
     "description": "A personalized startup page for Chrome.",
+    "host_permissions": [
+        "https://news.google.com/*"
+    ],
     "chrome_url_overrides": {
         "newtab": "index.html"
     }
