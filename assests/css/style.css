@@ -85,35 +85,51 @@ body::before {
     /* Adjust AM/PM size */
 }
 
-#display {
-    /* Fixed dimensions */
+#searchForm {
     width: 80vw;
     max-width: 1000px;
-    /* Prevent it from getting too wide */
-    height: 250px;
+}
 
-    /* Styling to look like a container */
+.search-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+}
+
+#searchEngine {
+    color: #f7f9fd;
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.45rem 0.75rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+#searchEngine option {
+    color: #111;
+}
+
+#display {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 250px;
+    resize: vertical;
     background-color: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-
-    /* Text properties */
+    color: #f7f9fd;
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
     font-size: 40px;
-    /* Set a static font size */
+    line-height: 1.35;
     padding: 1.5rem 2rem;
     overflow-y: auto;
+    outline: none;
 }
 
-/* This is a new wrapper we'll add with JS for the text content */
-#display-content-wrapper {
-    display: inline-block;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    text-align: center;
-    /* Align wrapped text to the left */
-    width: 100%;
+#display::placeholder {
+    color: rgba(247, 249, 253, 0.55);
 }
 
 
@@ -121,6 +137,13 @@ body::before {
 .secondary {
     padding: 35px 20px 0;
     text-align: center;
+}
+
+#greeting {
+    margin-top: 0.4rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    opacity: 0.82;
 }
 
 .ampm {
@@ -147,7 +170,7 @@ body::before {
 
 .viewer {
     margin: 0 auto;
-    width: 70rem;
+    width: min(70rem, calc(100vw - 32px));
     position: fixed;
     bottom: 35px;
     left: 0;
@@ -155,7 +178,9 @@ body::before {
 }
 
 .image-container {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 15px;
 }
 
@@ -168,10 +193,226 @@ body::before {
     text-align: center;
     background-color: transparent;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 70px;
+}
+
+.card a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
 }
 
 .card img {
     height: 60px;
+    width: 60px;
+    object-fit: contain;
+}
+
+.shortcut-placeholder {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #f7f9fd;
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.shortcut-name {
+    max-width: 110px;
+    overflow: hidden;
+    color: #f7f9fd;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.manage-shortcuts {
+    position: fixed;
+    right: 24px;
+    bottom: 35px;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #f7f9fd;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.manage-shortcuts:hover,
+.manage-shortcuts:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+#shortcutDialog {
+    box-sizing: border-box;
+    width: min(720px, calc(100vw - 32px));
+    max-height: min(80vh, 720px);
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(18, 20, 24, 0.97);
+    color: #f7f9fd;
+    font-family: 'Poppins', sans-serif;
+}
+
+#shortcutDialog::backdrop {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.shortcut-dialog-header,
+.shortcut-dialog-actions,
+.shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.shortcut-dialog-header {
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.shortcut-dialog-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.shortcut-dialog-header button,
+.remove-shortcut,
+.dialog-secondary-button,
+.dialog-primary-button {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    padding: 0.45rem 0.7rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7f9fd;
+    font: inherit;
+    cursor: pointer;
+}
+
+.shortcut-dialog-header button {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.shortcut-row {
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+
+.shortcut-row input {
+    min-width: 0;
+    flex: 1 1 140px;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.25);
+    color: #f7f9fd;
+    font: inherit;
+}
+
+.shortcut-row input[type="file"] {
+    flex: 1 1 190px;
+    padding: 0.3rem;
+    font-size: 12px;
+}
+
+.shortcut-row input[type="file"]::file-selector-button {
+    margin-right: 0.5rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f7f9fd;
+    cursor: pointer;
+}
+
+.shortcut-icon-status {
+    flex: 1 1 120px;
+    overflow: hidden;
+    font-size: 12px;
+    opacity: 0.75;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.use-site-icon {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    padding: 0.45rem 0.7rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7f9fd;
+    font: inherit;
+    cursor: pointer;
+}
+
+.shortcut-dialog-actions {
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.dialog-primary-button {
+    background: rgba(98, 171, 255, 0.3);
+}
+
+@media (max-width: 700px) {
+    #searchForm {
+        width: calc(100vw - 32px);
+    }
+
+    #clock {
+        font-size: 56px;
+    }
+
+    #searchPage.active #clock {
+        font-size: 38px;
+        margin-top: 1rem;
+        margin-bottom: 4vh;
+    }
+
+    #display {
+        height: 220px;
+        padding: 1rem;
+        font-size: 28px;
+    }
+
+    .viewer {
+        bottom: 20px;
+    }
+
+    .manage-shortcuts {
+        right: 16px;
+        bottom: 105px;
+    }
+
+    .shortcut-row input {
+        flex-basis: calc(50% - 0.75rem);
+    }
 }
 
 /* --- NEW: LOADER STYLES --- */

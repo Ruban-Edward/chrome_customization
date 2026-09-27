@@ -19,10 +19,12 @@
             <div class="row">
                 <div class="col-12 text-center secondary">
                     <div id="date"></div>
+                    <div id="greeting" aria-live="polite"></div>
                     <div class="viewer">
                         <div class="image-container" id="imageContainer">
                             <!-- Images with links will be inserted dynamically -->
                         </div>
+                        <button id="manageShortcuts" class="manage-shortcuts" type="button">Manage links</button>
                     </div>
                 </div>
             </div>
@@ -31,10 +33,35 @@
         <!-- Search Page Wrapper -->
         <div id="searchPage" class="page-container">
             <div id="clock"></div>
-            <div id="display"></div>
+            <form id="searchForm">
+                <div class="search-controls">
+                    <label class="visually-hidden" for="searchEngine">Search engine</label>
+                    <select id="searchEngine" aria-label="Search engine">
+                        <option value="google">Google</option>
+                        <option value="bing">Bing</option>
+                        <option value="duckduckgo">DuckDuckGo</option>
+                    </select>
+                </div>
+                <textarea id="display" rows="3" aria-label="Search the web" placeholder="Search the web..." enterkeyhint="search"></textarea>
+            </form>
         </div>
 
     </div>
+
+    <dialog id="shortcutDialog" aria-labelledby="shortcutDialogTitle">
+        <form id="shortcutForm">
+            <div class="shortcut-dialog-header">
+                <h2 id="shortcutDialogTitle">Manage links</h2>
+                <button id="closeShortcutDialog" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div id="shortcutList"></div>
+            <button id="addShortcut" class="dialog-secondary-button" type="button">+ Add link</button>
+            <div class="shortcut-dialog-actions">
+                <button id="cancelShortcutChanges" class="dialog-secondary-button" type="button">Cancel</button>
+                <button class="dialog-primary-button" type="submit">Save links</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- NEW: Loader Overlay -->
     <div id="loader-overlay">
