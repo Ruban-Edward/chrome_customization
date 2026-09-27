@@ -4,7 +4,9 @@
     "version": "1.0",
     "description": "A personalized startup page for Chrome.",
     "host_permissions": [
-        "https://news.google.com/*"
+        "https://news.google.com/*",
+        "https://api.nasdaq.com/*",
+        "https://query2.finance.yahoo.com/*"
     ],
     "chrome_url_overrides": {
         "newtab": "index.html"

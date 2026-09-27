@@ -9,7 +9,14 @@ const shortcutDialog = document.getElementById("shortcutDialog");
 const shortcutList = document.getElementById("shortcutList");
 const trendingNews = document.getElementById("trendingNews");
 const trendingNewsList = document.getElementById("trendingNewsList");
+const stocksPanel = document.getElementById("stocksPanel");
+const stockForm = document.getElementById("stockForm");
+const stockSymbols = document.getElementById("stockSymbols");
+const stockList = document.getElementById("stockList");
+const stockEmpty = document.getElementById("stockEmpty");
+const stockStatus = document.getElementById("stockStatus");
 let isLoadingTrendingNews = false;
+let stockRequestController;
 
 const defaultShortcuts = [
     { src: 'assests/img/youtube.png', url: 'https://www.youtube.com/', text: 'YouTube' },
@@ -29,6 +36,20 @@ function validWebURL(value) {
     }
 }
 
+function validStockSymbol(value) {
+    return /^[A-Z][A-Z0-9.-]{0,9}$/.test(value);
+}
+
+function loadStocks() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('home.stocks.v1'));
+        if (!Array.isArray(saved)) return [];
+        return [...new Set(saved.map(symbol => String(symbol).trim().toUpperCase()).filter(validStockSymbol))].slice(0, 10);
+    } catch {
+        return [];
+    }
+}
+
 function loadShortcuts() {
     try {
         const saved = JSON.parse(localStorage.getItem('home.shortcuts.v1'));
@@ -43,6 +64,8 @@ function loadShortcuts() {
 }
 
 let shortcuts = loadShortcuts();
+let stocks = loadStocks();
+let isEditingStocks = stocks.length === 0;
 
 function switchPage(showPage) {
     if (showPage === 'search') {
@@ -243,6 +266,143 @@ async function loadTrendingNews() {
     }
 }
 
+function renderStockPanel() {
+    stockForm.hidden = !isEditingStocks;
+    stockSymbols.value = stocks.join(', ');
+    document.getElementById('manageStocks').textContent = stocks.length ? 'Edit' : 'Add stocks';
+    stockList.replaceChildren();
+    stockEmpty.hidden = stocks.length > 0 || isEditingStocks;
+    stockStatus.hidden = true;
+
+    stocks.forEach(symbol => {
+        const row = document.createElement('li');
+        row.className = 'stock-row';
+        const label = document.createElement('span');
+        label.className = 'stock-symbol';
+        label.textContent = symbol;
+        const change = document.createElement('span');
+        change.className = 'stock-change';
+        change.textContent = 'Loading...';
+        row.append(label, change);
+        stockList.appendChild(row);
+    });
+}
+
+async function refreshStockQuotes() {
+    if (!stocks.length) return;
+
+    stockRequestController?.abort();
+    const controller = new AbortController();
+    stockRequestController = controller;
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    stockStatus.hidden = false;
+    stockStatus.textContent = 'Loading quotes...';
+
+    try {
+        const quotes = await Promise.all(stocks.map(async symbol => {
+            try {
+                const response = await fetch(`https://api.nasdaq.com/api/quote/${encodeURIComponent(symbol)}/info?assetclass=stocks`, {
+                    signal: controller.signal,
+                    cache: 'no-store',
+                    headers: { Accept: 'application/json' }
+                });
+                const data = response.ok ? await response.json() : null;
+                const quote = data.data?.primaryData;
+                if (quote?.percentageChange && quote?.lastSalePrice) {
+                    return { symbol, percentageChange: quote.percentageChange, lastSalePrice: quote.lastSalePrice };
+                }
+            } catch {
+                if (controller.signal.aborted) return null;
+            }
+
+            const yahooSymbols = symbol.includes('.') ? [symbol] : [`${symbol}.NS`, `${symbol}.BO`];
+            for (const yahooSymbol of yahooSymbols) {
+                try {
+                    const response = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=5d&interval=1d`, {
+                        signal: controller.signal,
+                        cache: 'no-store',
+                        headers: { Accept: 'application/json' }
+                    });
+                    if (!response.ok) continue;
+
+                    const chart = (await response.json()).chart?.result?.[0];
+                    const price = chart?.meta?.regularMarketPrice;
+                    const previousClose = chart?.meta?.chartPreviousClose;
+                    if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose <= 0) continue;
+
+                    const percentage = ((price - previousClose) / previousClose) * 100;
+                    const currency = chart.meta.currency === 'INR' ? '\u20b9' : `${chart.meta.currency} `;
+                    return {
+                        symbol,
+                        percentageChange: `${percentage > 0 ? '+' : ''}${percentage.toFixed(2)}%`,
+                        lastSalePrice: `${currency}${price.toFixed(2)}`
+                    };
+                } catch {
+                    if (controller.signal.aborted) return null;
+                }
+            }
+            return null;
+        }));
+
+        if (stockRequestController !== controller) return;
+        let availableQuotes = 0;
+        [...stockList.children].forEach((row, index) => {
+            const quote = quotes[index];
+            const change = row.querySelector('.stock-change');
+            if (!quote) {
+                change.textContent = 'Unavailable';
+                change.classList.add('neutral');
+                return;
+            }
+            availableQuotes++;
+            change.textContent = quote.percentageChange;
+            change.title = `Last sale: ${quote.lastSalePrice}`;
+            const percentage = Number.parseFloat(quote.percentageChange);
+            change.classList.add(percentage > 0 ? 'positive' : percentage < 0 ? 'negative' : 'neutral');
+        });
+        stockStatus.textContent = availableQuotes
+            ? `Updated ${new Date().toLocaleTimeString()}`
+            : 'Quotes unavailable';
+    } finally {
+        clearTimeout(timeout);
+        if (stockRequestController === controller) stockRequestController = null;
+    }
+}
+
+document.getElementById('manageStocks').addEventListener('click', () => {
+    isEditingStocks = stocks.length === 0 || !isEditingStocks;
+    renderStockPanel();
+    if (isEditingStocks) stockSymbols.focus();
+});
+
+document.getElementById('cancelStockEdit').addEventListener('click', () => {
+    isEditingStocks = false;
+    renderStockPanel();
+});
+
+stockForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const requestedStocks = [...new Set(stockSymbols.value.toUpperCase().split(/[\s,]+/).filter(Boolean))];
+    if (requestedStocks.length > 10 || requestedStocks.some(symbol => !validStockSymbol(symbol))) {
+        stockStatus.hidden = false;
+        stockStatus.textContent = 'Enter up to 10 valid ticker symbols.';
+        return;
+    }
+
+    try {
+        localStorage.setItem('home.stocks.v1', JSON.stringify(requestedStocks));
+    } catch {
+        stockStatus.hidden = false;
+        stockStatus.textContent = 'Could not save stocks in this browser.';
+        return;
+    }
+    stockRequestController?.abort();
+    stocks = requestedStocks;
+    isEditingStocks = false;
+    renderStockPanel();
+    refreshStockQuotes();
+});
+
 function appendShortcutRow(shortcut = {}) {
     const row = document.createElement('div');
     row.className = 'shortcut-row';
@@ -361,10 +521,25 @@ updateClock();
 updateDate();
 renderShortcuts();
 loadTrendingNews();
-window.addEventListener('online', loadTrendingNews);
+renderStockPanel();
+if (stocks.length) refreshStockQuotes();
+setInterval(() => {
+    if (!document.hidden) refreshStockQuotes();
+}, 5 * 60 * 1000);
+window.addEventListener('online', () => {
+    loadTrendingNews();
+    refreshStockQuotes();
+});
 window.addEventListener('offline', () => {
     trendingNews.hidden = true;
+    if (stocks.length) {
+        stockStatus.hidden = false;
+        stockStatus.textContent = 'Offline; quotes may be stale.';
+    }
 });
 document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && trendingNews.hidden) loadTrendingNews();
+    if (!document.hidden) {
+        if (trendingNews.hidden) loadTrendingNews();
+        refreshStockQuotes();
+    }
 });

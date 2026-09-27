@@ -33,6 +33,24 @@
                 <ol id="trendingNewsList"></ol>
                 <a class="more-news-link" href="https://news.google.com/" target="_blank" rel="noopener noreferrer">More news</a>
             </aside>
+            <aside id="stocksPanel" class="trending-news stocks-panel" aria-labelledby="stocksTitle">
+                <div class="stocks-panel-heading">
+                    <h2 id="stocksTitle">Stocks</h2>
+                    <span class="stock-delay-label">Delayed</span>
+                </div>
+                <button id="manageStocks" class="manage-stocks" type="button">Add stocks</button>
+                <form id="stockForm" class="stock-form" hidden>
+                    <label for="stockSymbols">Ticker symbols</label>
+                    <input id="stockSymbols" type="text" maxlength="120" placeholder="AAPL, MSFT, KO" autocomplete="off">
+                    <div class="stock-form-actions">
+                        <button type="submit">Save</button>
+                        <button id="cancelStockEdit" type="button">Cancel</button>
+                    </div>
+                </form>
+                <ul id="stockList" class="stock-list"></ul>
+                <p id="stockEmpty" class="stock-empty">Add ticker symbols to start.</p>
+                <p id="stockStatus" class="stock-status" aria-live="polite" hidden></p>
+            </aside>
         </div>
 
         <!-- Search Page Wrapper -->

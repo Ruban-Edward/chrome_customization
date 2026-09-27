@@ -178,6 +178,7 @@ body::before {
 }
 
 .trending-news {
+    box-sizing: border-box;
     position: fixed;
     top: 50%;
     left: 24px;
@@ -230,6 +231,123 @@ body::before {
     margin-top: 0.85rem;
     color: #a9d6ff;
     font: 600 12px 'Poppins', sans-serif;
+}
+
+.stocks-panel {
+    right: 24px;
+    left: auto;
+}
+
+.stocks-panel [hidden] {
+    display: none;
+}
+
+.stocks-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.stocks-panel-heading h2 {
+    margin-bottom: 0;
+}
+
+.stock-delay-label {
+    font: 500 9px 'Poppins', sans-serif;
+    letter-spacing: 0.08em;
+    opacity: 0.62;
+}
+
+.manage-stocks,
+.stock-form-actions button {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    padding: 0.3rem 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7f9fd;
+    font: 500 11px 'Poppins', sans-serif;
+    cursor: pointer;
+}
+
+.manage-stocks {
+    margin: 0.6rem 0;
+}
+
+.stock-form {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0.65rem 0;
+    font: 400 11px 'Poppins', sans-serif;
+}
+
+.stock-form input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    padding: 0.45rem 0.55rem;
+    background: rgba(0, 0, 0, 0.28);
+    color: #f7f9fd;
+    font: inherit;
+}
+
+.stock-form input::placeholder {
+    color: rgba(247, 249, 253, 0.55);
+}
+
+.stock-form-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.stock-list {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.45rem 0;
+    font: 500 12px 'Poppins', sans-serif;
+}
+
+.stock-symbol {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stock-change {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+}
+
+.stock-change.positive {
+    color: #8ee0af;
+}
+
+.stock-change.negative {
+    color: #ff9a9a;
+}
+
+.stock-change.neutral,
+.stock-empty,
+.stock-status {
+    color: rgba(247, 249, 253, 0.68);
+}
+
+.stock-empty,
+.stock-status {
+    margin: 0.45rem 0 0;
+    font: 400 10px/1.45 'Poppins', sans-serif;
 }
 
 .image-container {
@@ -471,7 +589,13 @@ body::before {
 
     .trending-news {
         left: 12px;
-        width: min(260px, calc(100vw - 24px));
+        width: calc(50vw - 20px);
+        max-height: 38vh;
+    }
+
+    .stocks-panel {
+        right: 12px;
+        width: calc(50vw - 20px);
         max-height: 38vh;
     }
 }
