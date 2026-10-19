@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi Bro 👋</title>
-    <link rel="shortcut icon" href="assests/img/search.ico" type="image/x-icon">
-    <link rel="stylesheet" href="assests/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assests/css/style.css">
+    <link rel="shortcut icon" href="assets/img/search.ico" type="image/x-icon">
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" href="assets/css/font.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -65,7 +67,7 @@
                         <option value="duckduckgo">DuckDuckGo</option>
                     </select>
                 </div>
-                <textarea id="display" rows="3" aria-label="Search the web" placeholder="Search the web..." enterkeyhint="search"></textarea>
+                <textarea id="display" rows="3" maxlength="2000" spellcheck="false" aria-label="Search the web" placeholder="Search the web..." enterkeyhint="search"></textarea>
             </form>
         </div>
 
@@ -87,7 +89,7 @@
     </dialog>
 
     <!-- NEW: Loader Overlay -->
-    <div id="loader-overlay">
+    <div id="loader-overlay" role="status" aria-label="Searching">
         <div id="wifi-loader">
             <svg class="circle-outer" viewBox="0 0 86 86">
                 <circle class="back" cx="43" cy="43" r="40"></circle>
@@ -106,7 +108,7 @@
         </div>
     </div>
 
-    <script src="assests/js/script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>
