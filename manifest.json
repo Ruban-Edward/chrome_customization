@@ -1,19 +1,19 @@
 {
     "manifest_version": 3,
     "name": "Custom Startup Page",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "A personalized startup page for Chrome.",
     "minimum_chrome_version": "104",
+    "icons": {
+        "16": "assets/img/icon-16.png",
+        "48": "assets/img/icon-48.png",
+        "128": "assets/img/icon-128.png"
+    },
     "permissions": [
         "favicon"
     ],
-    "host_permissions": [
-        "https://news.google.com/*",
-        "https://api.nasdaq.com/*",
-        "https://query2.finance.yahoo.com/*"
-    ],
     "content_security_policy": {
-        "extension_pages": "default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; font-src https://fonts.gstatic.com https://fonts.cdnfonts.com; connect-src https://news.google.com https://api.nasdaq.com https://query2.finance.yahoo.com; base-uri 'none'; form-action 'none'"
+        "extension_pages": "default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'"
     },
     "chrome_url_overrides": {
         "newtab": "index.html"

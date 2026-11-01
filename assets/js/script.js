@@ -7,31 +7,15 @@ const loaderOverlay = document.getElementById("loader-overlay");
 const imageContainer = document.getElementById("imageContainer");
 const shortcutDialog = document.getElementById("shortcutDialog");
 const shortcutList = document.getElementById("shortcutList");
-const trendingNews = document.getElementById("trendingNews");
-const trendingNewsList = document.getElementById("trendingNewsList");
-const stocksPanel = document.getElementById("stocksPanel");
-const stockForm = document.getElementById("stockForm");
-const stockSymbols = document.getElementById("stockSymbols");
-const stockList = document.getElementById("stockList");
-const stockEmpty = document.getElementById("stockEmpty");
-const stockStatus = document.getElementById("stockStatus");
-let isLoadingTrendingNews = false;
-let stockRequestController;
-let lastStockRefresh = 0;
 let navigationTimer;
 let renderedDateKey = '';
 
 const KEYS = {
     shortcuts: 'home.shortcuts.v1',
-    stocks: 'home.stocks.v1',
-    engine: 'home.searchEngine',
-    news: 'home.news.v1'
+    engine: 'home.searchEngine'
 };
 const MAX_SHORTCUTS = 24;
-const MAX_STOCKS = 10;
 const MAX_QUERY_LENGTH = 2000;
-const NEWS_TTL_MS = 10 * 60 * 1000;
-const MIN_STOCK_REFRESH_MS = 60 * 1000;
 const INTERACTIVE_SELECTOR = 'a, button, select, input, textarea, [contenteditable="true"]';
 
 const defaultShortcuts = [
@@ -57,7 +41,7 @@ function validWebURL(value, { httpsOnly = false } = {}) {
 }
 
 // Only bundled icons or small raster data URLs are accepted as custom icons.
-// (Older saved data used the misspelled "assests/" folder; it is migrated here.)
+// (Older saved data that may have used "assests/" is safely migrated to "assets/".)
 function safeIconSrc(value) {
     if (typeof value !== 'string' || !value) return '';
     const migrated = value.replace(/^assests\//, 'assets/');
@@ -66,27 +50,13 @@ function safeIconSrc(value) {
     return '';
 }
 
-// Uses Chrome's local favicon cache, so no site list is sent to a third party.
+// Uses Chrome's local favicon cache, so no site list is sent to any third party.
 function siteIconURL(pageURL) {
     if (typeof chrome === 'undefined' || !chrome.runtime?.id) return '';
     const icon = new URL(chrome.runtime.getURL('/_favicon/'));
     icon.searchParams.set('pageUrl', pageURL);
     icon.searchParams.set('size', '64');
     return icon.href;
-}
-
-function validStockSymbol(value) {
-    return /^[A-Z][A-Z0-9.-]{0,9}$/.test(value);
-}
-
-function loadStocks() {
-    try {
-        const saved = JSON.parse(localStorage.getItem(KEYS.stocks));
-        if (!Array.isArray(saved)) return [];
-        return [...new Set(saved.map(symbol => String(symbol).trim().toUpperCase()).filter(validStockSymbol))].slice(0, MAX_STOCKS);
-    } catch {
-        return [];
-    }
 }
 
 function loadShortcuts() {
@@ -104,8 +74,6 @@ function loadShortcuts() {
 }
 
 let shortcuts = loadShortcuts();
-let stocks = loadStocks();
-let isEditingStocks = stocks.length === 0;
 
 function switchPage(showPage) {
     if (showPage === 'search') {
@@ -301,274 +269,6 @@ function renderShortcuts() {
     });
 }
 
-function cleanStories(stories) {
-    return stories.map(story => ({
-        title: typeof story?.title === 'string' ? story.title.trim().slice(0, 200) : '',
-        url: validWebURL(story?.url, { httpsOnly: true })
-    })).filter(story => story.title && story.url).slice(0, 5);
-}
-
-function renderNews(stories) {
-    if (!stories.length) {
-        trendingNews.hidden = true;
-        return;
-    }
-    const fragment = document.createDocumentFragment();
-    stories.forEach(story => {
-        const item = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = story.url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.referrerPolicy = 'no-referrer';
-        link.textContent = story.title;
-        item.appendChild(link);
-        fragment.appendChild(item);
-    });
-    trendingNewsList.replaceChildren(fragment);
-    trendingNews.hidden = false;
-}
-
-function readNewsCache() {
-    try {
-        const cached = JSON.parse(localStorage.getItem(KEYS.news));
-        if (cached && Array.isArray(cached.stories) && Date.now() - cached.time < NEWS_TTL_MS) {
-            const stories = cleanStories(cached.stories);
-            if (stories.length) return stories;
-        }
-    } catch {
-        // Ignore unreadable cache and fetch fresh headlines.
-    }
-    return null;
-}
-
-async function loadTrendingNews({ force = false } = {}) {
-    if (isLoadingTrendingNews) return;
-
-    if (!force) {
-        const cached = readNewsCache();
-        if (cached) {
-            renderNews(cached);
-            return;
-        }
-    }
-    isLoadingTrendingNews = true;
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    try {
-        const response = await fetch('https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en', {
-            signal: controller.signal,
-            cache: 'no-store',
-            mode: 'cors',
-            credentials: 'omit',
-            referrerPolicy: 'no-referrer'
-        });
-        if (!response.ok) {
-            trendingNews.hidden = true;
-            return;
-        }
-
-        const xml = new DOMParser().parseFromString(await response.text(), 'application/xml');
-        if (xml.querySelector('parsererror')) {
-            trendingNews.hidden = true;
-            return;
-        }
-
-        const stories = cleanStories([...xml.querySelectorAll('item')].slice(0, 5).map(item => ({
-            title: item.querySelector('title')?.textContent,
-            url: item.querySelector('link')?.textContent.trim()
-        })));
-        renderNews(stories);
-        if (stories.length) {
-            try {
-                localStorage.setItem(KEYS.news, JSON.stringify({ time: Date.now(), stories }));
-            } catch {
-                // Caching is optional.
-            }
-        }
-    } catch {
-        trendingNews.hidden = true;
-    } finally {
-        clearTimeout(timeout);
-        isLoadingTrendingNews = false;
-    }
-}
-
-function renderStockPanel() {
-    stockForm.hidden = !isEditingStocks;
-    stockSymbols.value = stocks.join(', ');
-    document.getElementById('manageStocks').textContent = stocks.length ? 'Edit' : 'Add stocks';
-    stockList.replaceChildren();
-    stockEmpty.hidden = stocks.length > 0 || isEditingStocks;
-    stockStatus.hidden = true;
-
-    stocks.forEach(symbol => {
-        const row = document.createElement('li');
-        row.className = 'stock-row';
-        const label = document.createElement('span');
-        label.className = 'stock-symbol';
-        label.textContent = symbol;
-        const values = document.createElement('span');
-        values.className = 'stock-values';
-        const price = document.createElement('span');
-        price.className = 'stock-price';
-        price.textContent = 'Loading...';
-        const change = document.createElement('span');
-        change.className = 'stock-change';
-        change.textContent = 'Loading...';
-        values.append(price, change);
-        row.append(label, values);
-        stockList.appendChild(row);
-    });
-}
-
-const CURRENCY_SYMBOLS = { INR: '\u20b9', USD: '$', EUR: '\u20ac', GBP: '\u00a3', JPY: '\u00a5' };
-
-async function fetchJSON(url, signal) {
-    const response = await fetch(url, {
-        signal,
-        cache: 'no-store',
-        credentials: 'omit',
-        referrerPolicy: 'no-referrer',
-        headers: { Accept: 'application/json' }
-    });
-    return response.ok ? response.json() : null;
-}
-
-async function fetchNasdaqQuote(symbol, signal) {
-    try {
-        const data = await fetchJSON(`https://api.nasdaq.com/api/quote/${encodeURIComponent(symbol)}/info?assetclass=stocks`, signal);
-        const quote = data?.data?.primaryData;
-        const price = String(quote?.lastSalePrice ?? '').trim();
-        let change = String(quote?.percentageChange ?? '').trim();
-        if (change === 'UNCH') change = '0.00%';
-        // Only accept plain numeric strings from the provider.
-        if (/^[$\u20b9\u20ac\u00a3]?[\d,]+(\.\d+)?$/.test(price) && /^[+-]?[\d,]+(\.\d+)?%$/.test(change)) {
-            return { symbol, percentageChange: change, lastSalePrice: price };
-        }
-    } catch {
-        // Fall through to the next provider.
-    }
-    return null;
-}
-
-async function fetchYahooQuote(symbol, yahooSymbol, signal) {
-    try {
-        const data = await fetchJSON(`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=5d&interval=1d`, signal);
-        const chart = data?.chart?.result?.[0];
-        const price = chart?.meta?.regularMarketPrice;
-        // chartPreviousClose is the close *before the 5-day range*, which would show a
-        // multi-day change. Use the previous session's close instead.
-        const closes = (chart?.indicators?.quote?.[0]?.close ?? []).filter(Number.isFinite);
-        const previousClose = closes.length >= 2 ? closes[closes.length - 2] : chart?.meta?.previousClose;
-        if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose <= 0) return null;
-
-        const percentage = ((price - previousClose) / previousClose) * 100;
-        const code = /^[A-Z]{3}$/.test(chart.meta.currency ?? '') ? chart.meta.currency : '';
-        const currency = CURRENCY_SYMBOLS[code] ?? (code ? `${code} ` : '');
-        return {
-            symbol,
-            percentageChange: `${percentage > 0 ? '+' : ''}${percentage.toFixed(2)}%`,
-            lastSalePrice: `${currency}${price.toFixed(2)}`
-        };
-    } catch {
-        return null;
-    }
-}
-
-async function fetchQuote(symbol, signal) {
-    const nasdaq = await fetchNasdaqQuote(symbol, signal);
-    if (nasdaq || signal.aborted) return nasdaq;
-
-    // Indian listings first (as documented), then the bare symbol (e.g. ETFs).
-    const candidates = symbol.includes('.') ? [symbol] : [`${symbol}.NS`, `${symbol}.BO`, symbol];
-    for (const candidate of candidates) {
-        if (signal.aborted) return null;
-        const quote = await fetchYahooQuote(symbol, candidate, signal);
-        if (quote) return quote;
-    }
-    return null;
-}
-
-async function refreshStockQuotes({ force = false } = {}) {
-    if (!stocks.length) return;
-    if (!force && Date.now() - lastStockRefresh < MIN_STOCK_REFRESH_MS) return;
-    lastStockRefresh = Date.now();
-
-    stockRequestController?.abort();
-    const controller = new AbortController();
-    stockRequestController = controller;
-    const timeout = setTimeout(() => controller.abort(), 12000);
-    stockStatus.hidden = false;
-    stockStatus.textContent = 'Loading quotes...';
-
-    try {
-        const quotes = await Promise.all(stocks.map(symbol => fetchQuote(symbol, controller.signal)));
-
-        if (stockRequestController !== controller) return;
-        let availableQuotes = 0;
-        [...stockList.children].forEach((row, index) => {
-            const quote = quotes[index];
-            const price = row.querySelector('.stock-price');
-            const change = row.querySelector('.stock-change');
-            change.classList.remove('positive', 'negative', 'neutral');
-            if (!quote) {
-                price.textContent = '-';
-                change.textContent = 'Unavailable';
-                change.classList.add('neutral');
-                return;
-            }
-            availableQuotes++;
-            price.textContent = quote.lastSalePrice;
-            change.textContent = quote.percentageChange;
-            const percentage = Number.parseFloat(quote.percentageChange.replace(/,/g, ''));
-            change.classList.add(percentage > 0 ? 'positive' : percentage < 0 ? 'negative' : 'neutral');
-        });
-        stockStatus.textContent = availableQuotes
-            ? `Updated ${new Date().toLocaleTimeString()}`
-            : 'Quotes unavailable';
-    } finally {
-        clearTimeout(timeout);
-        if (stockRequestController === controller) stockRequestController = null;
-    }
-}
-
-document.getElementById('manageStocks').addEventListener('click', () => {
-    isEditingStocks = stocks.length === 0 || !isEditingStocks;
-    renderStockPanel();
-    if (isEditingStocks) stockSymbols.focus();
-});
-
-document.getElementById('cancelStockEdit').addEventListener('click', () => {
-    isEditingStocks = false;
-    renderStockPanel();
-});
-
-stockForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const requestedStocks = [...new Set(stockSymbols.value.toUpperCase().split(/[\s,]+/).filter(Boolean))];
-    if (requestedStocks.length > MAX_STOCKS || requestedStocks.some(symbol => !validStockSymbol(symbol))) {
-        stockStatus.hidden = false;
-        stockStatus.textContent = 'Enter up to 10 valid ticker symbols.';
-        return;
-    }
-
-    try {
-        localStorage.setItem(KEYS.stocks, JSON.stringify(requestedStocks));
-    } catch {
-        stockStatus.hidden = false;
-        stockStatus.textContent = 'Could not save stocks in this browser.';
-        return;
-    }
-    stockRequestController?.abort();
-    stocks = requestedStocks;
-    isEditingStocks = false;
-    renderStockPanel();
-    refreshStockQuotes({ force: true });
-});
-
 const ICON_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'];
 
 // Re-encode the chosen image at a small size: keeps storage small and strips
@@ -720,26 +420,8 @@ setInterval(updateClock, 1000);
 updateClock();
 updateDate();
 renderShortcuts();
-loadTrendingNews();
-renderStockPanel();
-if (stocks.length) refreshStockQuotes({ force: true });
-setInterval(() => {
-    if (!document.hidden) refreshStockQuotes();
-}, 5 * 60 * 1000);
-window.addEventListener('online', () => {
-    loadTrendingNews({ force: true });
-    refreshStockQuotes({ force: true });
-});
-window.addEventListener('offline', () => {
-    trendingNews.hidden = true;
-    if (stocks.length) {
-        stockStatus.hidden = false;
-        stockStatus.textContent = 'Offline; quotes may be stale.';
-    }
-});
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        if (trendingNews.hidden) loadTrendingNews();
-        refreshStockQuotes();
+        updateClock();
     }
 });

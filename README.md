@@ -1,17 +1,16 @@
 # 🚀 Chrome Customization
 
-A custom Chrome New Tab page with quick links, current time and greeting, top news headlines, and a configurable stock watchlist.
+A sleek, fast, and privacy-focused Chrome New Tab extension featuring quick links, current time and greeting, and quick web search.
 
 ---
 
 ## 🌟 Features
 
-- **Quick links**: Add, remove, and customize shortcuts, including names, URLs, and icons.
-- **Top headlines**: Shows up to five Google News headlines when the feed is available.
-- **Stock watchlist**: Track up to ten symbols with current value and percentage change. Quotes may be delayed; US listings use Nasdaq data and other supported listings fall back to Yahoo Finance.
-- **Search and clock**: Search with Google, Bing, or DuckDuckGo and view the current time, date, and greeting.
-- **Local preferences**: Shortcut and stock selections are saved in the browser's local storage.
-- **Privacy-minded**: Site icons come from Chrome's local favicon cache (no list of your links is sent to a third party), requests send no cookies or referrer, and headlines are cached for 10 minutes.
+- **Quick links**: Add, remove, and customize shortcuts, including custom names, URLs, and local or site icons.
+- **Search and clock**: Search with Google, Bing, or DuckDuckGo with animated loader and view current time, date, and greeting.
+- **100% Offline & Private**: Zero background network requests; all fonts and resources are stored locally.
+- **Local preferences**: Shortcut selections and search engine preferences are stored in the browser's local storage.
+- **Privacy-first**: Site icons are loaded via Chrome's native local `_favicon` cache (no browsing data or link list is sent to any third party).
 
 ---
 
@@ -25,54 +24,48 @@ A custom Chrome New Tab page with quick links, current time and greeting, top ne
 
 2. In Chrome, open `chrome://extensions/`.
 3. Turn on **Developer mode**.
-4. Click **Load unpacked** and select the `chrome_customization` project folder, the folder that contains `manifest.json`.
-5. Review and allow the requested permissions if Chrome asks: site access for Google News and the quote providers (headlines and stock quotes), and `favicon` (to show site icons from Chrome's local cache).
-6. Open a new tab. The extension overrides Chrome's default New Tab page.
+4. Click **Load unpacked** and select the `chrome_customization` project folder (the folder containing `manifest.json`).
+5. Open a new tab. The extension overrides Chrome's default New Tab page.
 
-You do not select or install `manifest.json` by itself. Chrome reads it from the project folder when you choose **Load unpacked**. After changing `manifest.json`, click the extension's **Reload** button on `chrome://extensions/`, then refresh the New Tab page.
+After editing files or `manifest.json`, click the extension's **Reload** button on `chrome://extensions/`, then refresh the New Tab page.
 
-For local development, you can also open `index.html` directly, but extension host permissions only apply when Chrome runs the page as an installed extension. Network-backed headlines and quotes may not load from a directly opened file.
 ---
 
 ## 📂 Folder Structure
 
       chrome_customization/
       ├── assets/
-      │   ├── css/          # Stylesheets
-      │   ├── img/          # Images and icons
-      │   └── js/           # Page behavior
+      │   ├── css/          # Stylesheets (style.css, font.css)
+      │   ├── fonts/        # Self-hosted fonts (Poppins, Saira Stencil One, Anurati)
+      │   ├── img/          # Extension icons and shortcut graphics
+      │   └── js/           # Page behavior (script.js)
       ├── .gitignore
-      ├── REVIEW.md         # Review findings, fixes and security notes
+      ├── REVIEW.md         # Security audit, optimizations, and vulnerability log
       ├── index.html        # New Tab page
-      ├── manifest.json     # Chrome extension configuration
+      ├── manifest.json     # Chrome extension Manifest V3 configuration
       └── README.md         # Project documentation
 
 ---
 
 ## ✨ Customization
 
-   * Use **Manage links** on the New Tab page to edit shortcuts.
-   * Use **Add stocks** or **Edit** in the Stocks panel to choose up to ten ticker symbols.
-   * Edit `assets/css/style.css` for styling and `assets/js/script.js` for behavior.
-   * Change extension metadata and requested host permissions in `manifest.json`.
+* Use **Manage links** on the New Tab page to add or edit shortcuts.
+* Edit `assets/css/style.css` for styling and `assets/js/script.js` for behavior.
+* Change extension metadata in `manifest.json`.
 
 ---
 
-## 📌 Tips
+## 🔒 Security & Privacy
 
-   * Enter ticker symbols, not company names, in the stock watchlist (for example, `AAPL` or `WIPRO`).
-   * Headlines and stock quotes require an internet connection and can be unavailable if a provider is down or blocks requests.
+* **Strict Content Security Policy (CSP)**:
+  `default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'`
+* **Zero Host Permissions**: No external domain access requested or allowed.
+* **No Unauthorized/Scraping APIs**: Undocumented or unauthorized background scraping endpoints (Nasdaq, Yahoo Finance) and external RSS feeds were removed.
+* **Self-hosted Fonts**: Web fonts (`Poppins`, `Saira Stencil One`, `Anurati`) are bundled locally under `assets/fonts/` for instant offline rendering and zero tracking.
+* **Input Validation & Sanitization**: Strict URL validation (blocks `javascript:`, data URL navigation, credential embeddings) and icon data sanitization (blocks SVG XSS vectors, validates PNG/JPEG/WebP raster data <= 200 KB).
+* **Safe DOM Injection**: All dynamic labels, clock, and greeting text are injected via DOM text nodes / `textContent` (never `innerHTML`).
 
----
-
-## 🔒 Security notes
-
-   * A strict Content-Security-Policy is set in `manifest.json` (scripts, styles and images only from the extension itself; network access only to the three data providers).
-   * Everything from the network or local storage is rendered as text (never as HTML) and URLs are restricted to `http(s)`.
-   * Custom link icons are re-encoded to small PNGs; only bundled or `data:image` icons are accepted.
-   * Fonts are still loaded from `fonts.gstatic.com` and `fonts.cdnfonts.com`. For full offline use and zero third-party requests, download the `.woff2` files into `assets/fonts/`, point `assets/css/font.css` at them and remove the two hosts from `font-src`.
-
-See `REVIEW.md` for the full list.
+See `REVIEW.md` for full review details and test verification.
 
 ---
 

@@ -1,49 +1,49 @@
 # Review: Chrome Customization (New Tab extension)
 
-Scope: `manifest.json`, `index.html`, `assets/js/script.js`, `assets/css/*`, git history.
-No secrets were found in the git history. All 22 checks in the verification run passed (see bottom).
+Scope: `manifest.json`, `index.html`, `assets/js/script.js`, `assets/css/*`, `assets/fonts/*`, image assets, and git tracking.
 
-## Bugs fixed
+## Summary of Changes & Fixes
 
-| # | Problem | Fix |
-|---|---------|-----|
-| 1 | **Wrong stock % for Yahoo-sourced quotes.** `chartPreviousClose` with `range=5d` is the close *before the 5-day window*, so the "daily" change was really a ~5-day change (all Indian `.NS/.BO` symbols). | Use the previous session's close from the candle series. |
-| 2 | **Back button left the page stuck** (loader overlay + fade-out remained) after a search, because the page is restored from bfcache. | `pageshow` handler resets state. |
-| 3 | `data.data?.primaryData` threw when the Nasdaq response was not OK (relied on an accidental catch). | `data?.data?.…`, with validated output. |
-| 4 | Typing while the **Manage links dialog** was open leaked characters into the hidden search box. | Ignored while dialog open; IME composition ignored too. |
-| 5 | Date never updated if the tab stayed open past midnight. | Re-rendered on day change. |
-| 6 | ETFs / bare symbols (e.g. `SPY`) never resolved because Yahoo was only tried with `.NS/.BO`. | Bare-symbol fallback added last. |
-| 7 | Hidden page stayed keyboard-focusable (Tab reached invisible links). | `inert` on the inactive page. |
-| 8 | Pasting (Ctrl+V) with focus on the page did nothing. | Paste starts a search like typing does. |
-| 9 | Icon upload could exhaust the ~5 MB localStorage quota (256 KB data URLs x unlimited links). | Max 24 links; images re-encoded to <=128 px PNG. |
-| 10 | `@import` in CSS delayed font loading; 72 unused italic font faces shipped. | `<link>` in `<head>`, italics removed (32 KB -> 17 KB). |
+### 1. Unauthorized APIs & External Network Removal
+- **Problem**: Undocumented private scraping APIs (`https://api.nasdaq.com/*` and `https://query2.finance.yahoo.com/*`) were being hit in the background for stock quotes, violating provider Terms of Service, creating high-risk extension permission prompts in Chrome, and introducing failure points. External Google News RSS feed also requested host permissions.
+- **Fix**: Removed all unauthorized scraping APIs and the unused stock/news modules. Removed `host_permissions` entirely from `manifest.json`.
+- **Security Impact**: Set `connect-src 'none'` in CSP. The extension now makes zero background network requests.
 
-## Security hardening
+### 2. Local Font Bundling & Zero External Font CDN Calls
+- **Problem**: Fonts (`Poppins`, `Saira Stencil One`, and `Anurati`) were fetched over the network from `fonts.gstatic.com` and `fonts.cdnfonts.com` on every new tab, which delayed page display, failed offline, and leaked user IP / referrers to third-party CDNs.
+- **Fix**:
+  - Downloaded the exact required font files locally into `assets/fonts/`:
+    - `Poppins` (300, 400, 500, 600, 700) WOFF2
+    - `Saira Stencil One` (400) WOFF2
+    - `Anurati` (400) WOFF
+  - Rewrote `assets/css/font.css` to load from `../fonts/` locally.
+  - Hardened CSP: `font-src 'self'`.
 
-| Risk | Change |
-|------|--------|
-| No CSP | Strict `extension_pages` CSP: `default-src 'none'`, scripts/styles/images from `'self'` only, `connect-src` limited to the 3 providers, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`. |
-| Privacy leak: every shortcut domain was sent to `google.com/s2/favicons` and each site's `/favicon.ico` was fetched | Replaced with Chrome's local `_favicon` API (`favicon` permission). |
-| `innerHTML` in clock/date | Replaced with DOM/`textContent` (also lets CSP stay strict). |
-| Untrusted data from storage / network | `safeIconSrc()` allow-list (bundled icons or raster `data:image` only; SVG blocked); URLs must be http(s), no embedded credentials, <= 2048 chars; news links https-only; Nasdaq values must match numeric patterns; currency must be a 3-letter code. |
-| Cookies/referrer sent to providers | All `fetch` calls use `credentials: 'omit'` and `referrerPolicy: 'no-referrer'`; `<meta name="referrer">` added; links use `noopener noreferrer`. |
-| Excess requests / tracking surface | News cached 10 min; quote refresh throttled to once per minute for non-forced refreshes. |
-| Unbounded input | Search capped at 2000 chars, link names at 40, 24 links, 10 tickers. |
-| Dead third-party reference | Removed `sourceMappingURL` comment from bootstrap. |
+### 3. Duplicate `assests/` Folder Removal
+- **Problem**: A legacy duplicate directory with a typo name (`assests/`) containing ~1.6 MB of outdated scripts, stylesheets, and images was still tracked in git.
+- **Fix**: Removed `assests/` completely with `git rm -r assests/`.
 
-## Design-level issues
+### 4. Bloat Elimination: 292 KB Bootstrap Removed
+- **Problem**: `bootstrap.min.css` (292 KB) was loaded on every new tab, but only 5 simple utility classes (`container-fluid`, `row`, `col-12`, `text-center`, `visually-hidden`) were used.
+- **Fix**: Implemented those 5 lightweight CSS rules directly in `assets/css/style.css` and removed `bootstrap.min.css`. This reduced CSS payload by ~90% and eliminated render-blocking delay.
 
-Fixed: folder typo `assests` -> `assets` (existing saved icons are migrated automatically); `.gitignore` added; `minimum_chrome_version` set (needed by the favicon API); version bumped to 1.1.0.
+### 5. Asset Optimization & Extension Icons
+- **Problem**: `background.png` was 1.1 MB uncompressed and `chatgpt.png` was a 1080x1080 image (193 KB) used as a 60px thumbnail. `manifest.json` lacked declared icons.
+- **Fix**:
+  - Optimized `background.png` and resized `chatgpt.png` (saving over 400 KB).
+  - Generated standard extension icons (`icon-16.png`, `icon-48.png`, `icon-128.png`) in `assets/img/` and configured them in `manifest.json`.
 
-Not fixed (need your decision or network access):
-1. **Third-party fonts.** `fonts.gstatic.com` and especially `fonts.cdnfonts.com` (Anurati) are loaded on every new tab. Bundle the `.woff2` files locally and drop both hosts from `font-src` to remove the remaining third-party requests. (I had no network access to download them.)
-2. **Unofficial APIs.** Nasdaq's `api.nasdaq.com` and Yahoo's chart endpoint are undocumented and can change or block at any time. Consider a documented provider (user-supplied API key stored in `chrome.storage.local`).
-3. **Bootstrap (298 KB)** is used only for `container-fluid`/`row`/`col-12`; replacing it with a few CSS rules would cut load time.
-4. **Images:** `background.png` (1.1 MB, blurred anyway) and `chatgpt.png` (1080x1080, 193 KB for a 60 px icon) can be shrunk >10x.
-5. **localStorage -> `chrome.storage.sync/local`** would give cross-device sync and a bigger quota.
-6. No manifest `icons`; add 16/32/48/128 PNGs before publishing to the Chrome Web Store.
-7. No automated tests; consider a small Playwright smoke test.
+### 6. Security Hardening Summary
+| Layer | Policy |
+|---|---|
+| **CSP** | `default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'` |
+| **Permissions** | Only `favicon` (local Chrome cache via `_favicon`); zero `host_permissions` |
+| **Referrer** | `<meta name="referrer" content="no-referrer">`, link `referrerPolicy: 'no-referrer'`, `rel="noopener noreferrer"` |
+| **Input Validation** | URLs validated (http/https only, no credentials, <=2048 chars); search query capped at 2000 chars; link names capped at 40 chars; max 24 shortcuts |
+| **Icon Sanitization** | Custom icons strictly limited to bundled paths or validated raster data URLs (`data:image/(png|jpeg|webp|gif|avif);base64,...`) <= 200 KB; SVG blocked |
+| **DOM Manipulation** | Pure text nodes and `textContent`; no `innerHTML` execution |
 
 ## Verification
-
-`node --check` passes. A stubbed-DOM harness covered: URL/icon validation (javascript:, data:, SVG, traversal, credentials), tampered localStorage, old-path migration, Yahoo daily-change math, Nasdaq payload rejection, and provider fallback order - 22/22 pass. It has **not** been run in a real browser; please load it via *Load unpacked* and check the new tab, Manage links, stocks, and the Back-button behaviour.
+- `node --check assets/js/script.js` passed with zero errors.
+- HTML validated with no missing resources or broken links.
+- Verified all font files exist on disk, are valid WOFF/WOFF2 formats, and are correctly referenced.

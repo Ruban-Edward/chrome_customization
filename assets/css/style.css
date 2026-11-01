@@ -1,3 +1,42 @@
+/* Layout utilities */
+.container-fluid {
+    width: 100%;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.75rem;
+    margin-left: -0.75rem;
+}
+
+.col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 body {
     margin: 0 auto;
     height: 100vh;
@@ -179,197 +218,7 @@ body::before {
     right: 0;
 }
 
-.trending-news {
-    box-sizing: border-box;
-    position: fixed;
-    top: 50%;
-    left: 24px;
-    width: min(290px, calc(100vw - 48px));
-    max-height: min(55vh, 430px);
-    padding: 0.85rem 0.95rem;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    transform: translateY(-50%);
-    border-left: 2px solid rgba(255, 255, 255, 0.52);
-    background: rgba(12, 15, 19, 0.56);
-    text-align: left;
-    backdrop-filter: blur(8px);
-}
 
-.trending-news::-webkit-scrollbar {
-    display: none;
-}
-
-.trending-news[hidden] {
-    display: none;
-}
-
-.trending-news h2 {
-    margin: 0 0 0.65rem;
-    font: 600 15px 'Poppins', sans-serif;
-}
-
-.trending-news ol {
-    display: grid;
-    gap: 0.65rem;
-    margin: 0;
-    padding-left: 1.25rem;
-    font: 400 12px/1.5 'Poppins', sans-serif;
-}
-
-.trending-news li {
-    padding-left: 0.1rem;
-}
-
-.trending-news a {
-    color: #f7f9fd;
-    text-decoration: none;
-}
-
-.trending-news a:hover,
-.trending-news a:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.trending-news .more-news-link {
-    display: inline-block;
-    margin-top: 0.85rem;
-    color: #a9d6ff;
-    font: 600 12px 'Poppins', sans-serif;
-}
-
-.stocks-panel {
-    right: 24px;
-    left: auto;
-}
-
-.stocks-panel [hidden] {
-    display: none;
-}
-
-.stocks-panel-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-}
-
-.stocks-panel-heading h2 {
-    margin-bottom: 0;
-}
-
-.stock-delay-label {
-    font: 500 9px 'Poppins', sans-serif;
-    letter-spacing: 0.08em;
-    opacity: 0.62;
-}
-
-.manage-stocks,
-.stock-form-actions button {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    padding: 0.3rem 0.5rem;
-    background: rgba(255, 255, 255, 0.08);
-    color: #f7f9fd;
-    font: 500 11px 'Poppins', sans-serif;
-    cursor: pointer;
-}
-
-.manage-stocks {
-    margin: 0.6rem 0;
-}
-
-.stock-form {
-    display: grid;
-    gap: 0.45rem;
-    margin: 0.65rem 0;
-    font: 400 11px 'Poppins', sans-serif;
-}
-
-.stock-form input {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    padding: 0.45rem 0.55rem;
-    background: rgba(0, 0, 0, 0.28);
-    color: #f7f9fd;
-    font: inherit;
-}
-
-.stock-form input::placeholder {
-    color: rgba(247, 249, 253, 0.55);
-}
-
-.stock-form-actions {
-    display: flex;
-    gap: 0.4rem;
-}
-
-.stock-list {
-    display: grid;
-    gap: 0.2rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.stock-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.45rem 0;
-    font: 500 12px 'Poppins', sans-serif;
-}
-
-.stock-symbol {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.stock-values {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 0.5rem;
-    font-variant-numeric: tabular-nums;
-}
-
-.stock-price {
-    color: rgba(247, 249, 253, 0.78);
-    white-space: nowrap;
-}
-
-.stock-change {
-    flex: 0 0 auto;
-    font-variant-numeric: tabular-nums;
-}
-
-.stock-change.positive {
-    color: #8ee0af;
-}
-
-.stock-change.negative {
-    color: #ff9a9a;
-}
-
-.stock-change.neutral,
-.stock-empty,
-.stock-status {
-    color: rgba(247, 249, 253, 0.68);
-}
-
-.stock-empty,
-.stock-status {
-    margin: 0.45rem 0 0;
-    font: 400 10px/1.45 'Poppins', sans-serif;
-}
 
 .image-container {
     display: flex;
@@ -608,33 +457,7 @@ body::before {
         flex-basis: calc(50% - 0.75rem);
     }
 
-    .trending-news {
-        left: 12px;
-        width: calc(50vw - 20px);
-        max-height: 38vh;
-        padding: 0.65rem;
-    }
 
-    .stocks-panel {
-        right: 12px;
-        left: auto;
-        width: calc(50vw - 20px);
-        max-height: 38vh;
-        padding: 0.65rem;
-    }
-
-    .stock-row {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .stock-values {
-        width: 100%;
-        justify-content: space-between;
-        gap: 0.25rem;
-        font-size: 10px;
-    }
 }
 
 /* --- NEW: LOADER STYLES --- */
