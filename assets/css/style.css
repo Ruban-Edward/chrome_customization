@@ -681,6 +681,139 @@ body::before {
     }
 }
 
+/* --- TOP NAV & GOOGLE APPS SHORTCUTS --- */
+.top-nav {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.top-nav-link {
+    color: rgba(247, 249, 253, 0.85);
+    font: 500 13px/1 'Poppins', sans-serif;
+    text-decoration: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.top-nav-link:hover,
+.top-nav-link:focus-visible {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+.google-apps-dropdown {
+    position: relative;
+}
+
+.google-apps-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(247, 249, 253, 0.85);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.google-apps-btn:hover,
+.google-apps-btn:focus-visible,
+.google-apps-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    outline: none;
+}
+
+.google-apps-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 310px;
+    max-height: min(460px, 80vh);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    background: rgba(18, 22, 28, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    padding: 14px 10px;
+    animation: menuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.google-apps-menu[hidden] {
+    display: none;
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.google-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 4px;
+}
+
+.google-app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 4px 8px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #f7f9fd;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.google-app-item:hover,
+.google-app-item:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.google-app-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.google-app-icon svg {
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.google-app-name {
+    font: 500 11px/1.2 'Poppins', sans-serif;
+    color: rgba(247, 249, 253, 0.9);
+    text-align: center;
+    white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

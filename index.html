@@ -12,6 +12,150 @@
 </head>
 
 <body>
+    <!-- Top-right Google Apps shortcuts -->
+    <header class="top-nav" aria-label="Google apps and shortcuts">
+        <div class="google-apps-dropdown">
+            <button id="googleAppsBtn" class="google-apps-btn" type="button" aria-label="Google apps" aria-expanded="false" aria-haspopup="true" title="Google apps">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                    <circle cx="5" cy="5" r="2"></circle>
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="19" cy="5" r="2"></circle>
+                    <circle cx="5" cy="12" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="19" cy="12" r="2"></circle>
+                    <circle cx="5" cy="19" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
+                    <circle cx="19" cy="19" r="2"></circle>
+                </svg>
+            </button>
+            <div id="googleAppsMenu" class="google-apps-menu" role="menu" hidden>
+                <div class="google-apps-grid">
+                    <a class="google-app-item" role="menuitem" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Search</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://mail.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#4285F4" d="M42 37V15.5L24 29 6 15.5V37c0 2.2 1.8 4 4 4h4V25.2l10 7.5 10-7.5V41h4c2.2 0 4-1.8 4-4z"/>
+                                <path fill="#34A853" d="M34 41h4c2.2 0 4-1.8 4-4V15.5l-8 6V41z"/>
+                                <path fill="#EA4335" d="M42 11c0-2.3-2.6-3.7-4.5-2.3L24 18.5 10.5 8.7C8.6 7.3 6 8.7 6 11v4.5L24 29l18-13.5V11z"/>
+                                <path fill="#FBBC05" d="M6 15.5V37c0 2.2 1.8 4 4 4h4V21.5L6 15.5z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Gmail</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://drive.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#FFC107" d="M17 6.5L31 6.5 45.5 31.5 31.5 31.5z"/>
+                                <path fill="#1976D2" d="M9.5 44.5L16.5 32.5 45.5 32.5 38.5 44.5z"/>
+                                <path fill="#4CAF50" d="M16.5 32.5L2.5 32.5 16.5 8 23.5 20.2z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Drive</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://docs.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#4285F4" d="M36 44H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4h16l12 12v24c0 2.2-1.8 4-4 4z"/>
+                                <path fill="#BBDEFB" d="M28 4v12h12L28 4z"/>
+                                <path fill="#FFF" d="M16 22h16v2.5H16zm0 6h16v2.5H16zm0 6h10v2.5H16z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Docs</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://sheets.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#0F9D58" d="M36 44H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4h16l12 12v24c0 2.2-1.8 4-4 4z"/>
+                                <path fill="#A5D6A7" d="M28 4v12h12L28 4z"/>
+                                <path fill="#FFF" d="M16 20h16v16H16zm2 2v3h5v-3zm7 0v3h5v-3zm-7 5v3h5v-3zm7 0v3h5v-3zm-7 5v2h5v-2zm7 0v2h5v-2z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Sheets</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://slides.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#F4B400" d="M36 44H12c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4h16l12 12v24c0 2.2-1.8 4-4 4z"/>
+                                <path fill="#FFE082" d="M28 4v12h12L28 4z"/>
+                                <rect x="15" y="21" width="18" height="13" fill="#FFF" rx="1.5"/>
+                                <rect x="17" y="23" width="14" height="9" fill="#F4B400" rx="1"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Slides</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <rect width="38" height="38" x="5" y="5" fill="#FFF" rx="6"/>
+                                <path fill="#4285F4" d="M37 5H11C7.7 5 5 7.7 5 11v6h38v-6c0-3.3-2.7-6-6-6z"/>
+                                <text x="24" y="37" fill="#4285F4" font-family="'Poppins',sans-serif" font-size="18" font-weight="700" text-anchor="middle">31</text>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Calendar</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://meet.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <rect width="24" height="22" x="6" y="13" fill="#00796B" rx="3"/>
+                                <path fill="#00897B" d="M6 16c0-1.7 1.3-3 3-3h18c1.7 0 3 1.3 3 3v2H6v-2z"/>
+                                <path fill="#26A69A" d="M30 20l12-7v22l-12-7v-8z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Meet</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#FF0000" d="M43.2 11.8c-.5-1.9-2-3.4-3.9-3.9C35.8 7 24 7 24 7s-11.8 0-15.3.9c-1.9.5-3.4 2-3.9 3.9C4 15.3 4 24 4 24s0 8.7.9 12.2c.5 1.9 2 3.4 3.9 3.9 3.5.9 15.3.9 15.3.9s11.8 0 15.3-.9c1.9-.5 3.4-2 3.9-3.9.9-3.5.9-12.2.9-12.2s0-8.7-.9-12.2z"/>
+                                <polygon fill="#FFF" points="20,31 31.5,24 20,17"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">YouTube</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://maps.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#4285F4" d="M24 4C14.6 4 7 11.6 7 21c0 11.9 14.7 22.3 15.3 22.7.4.3 1 .3 1.4 0 .6-.4 15.3-10.8 15.3-22.7 0-9.4-7.6-17-17-17z"/>
+                                <circle cx="24" cy="20" r="7" fill="#FFF"/>
+                                <path fill="#EA4335" d="M24 8c-6.6 0-12 5.4-12 12 0 7.4 8.7 15.3 12 18 3.3-2.7 12-10.6 12-18 0-6.6-5.4-12-12-12zm0 16c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Maps</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://photos.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <path fill="#EA4335" d="M24 14c0-5.5-4.5-10-10-10S4 8.5 4 14c0 5.5 4.5 10 10 10h10V14z"/>
+                                <path fill="#4285F4" d="M34 24c5.5 0 10-4.5 10-10s-4.5-10-10-10-10 4.5-10 10v10h10z"/>
+                                <path fill="#34A853" d="M24 34c0 5.5 4.5 10 10 10s10-4.5 10-10-4.5-10-10-10H24v10z"/>
+                                <path fill="#FBBC05" d="M14 24c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10V24H14z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Photos</span>
+                    </a>
+                    <a class="google-app-item" role="menuitem" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">
+                        <div class="google-app-icon">
+                            <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
+                                <rect width="38" height="38" x="5" y="5" fill="#4285F4" rx="6"/>
+                                <path fill="#FFF" d="M15 13h18v3h-7.5c-.7 3.5-2.7 6.7-5.5 9.2 2 1.4 4.3 2.4 6.7 3l-1.2 2.8c-3.1-.8-5.9-2.2-8.3-4-2.5 1.8-5.3 3.2-8.4 4l-1.2-2.8c2.4-.6 4.7-1.6 6.7-3-2.1-1.9-3.8-4.3-4.7-7h3c.7 1.9 1.9 3.5 3.4 4.8 2-1.8 3.4-4.1 4-6.8H15v-3zm14 9h3l7 17h-3.2l-1.7-4.5h-7.2L25.2 39H22l7-17zm2.4 9.5l-2.4-6.6-2.4 6.6h4.8z"/>
+                            </svg>
+                        </div>
+                        <span class="google-app-name">Translate</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
     <!-- The main container now holds both pages -->
     <div class="container-fluid">
 

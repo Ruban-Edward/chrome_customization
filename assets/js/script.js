@@ -7,6 +7,8 @@ const loaderOverlay = document.getElementById("loader-overlay");
 const imageContainer = document.getElementById("imageContainer");
 const shortcutDialog = document.getElementById("shortcutDialog");
 const shortcutList = document.getElementById("shortcutList");
+const googleAppsBtn = document.getElementById("googleAppsBtn");
+const googleAppsMenu = document.getElementById("googleAppsMenu");
 let navigationTimer;
 let renderedDateKey = '';
 
@@ -150,13 +152,41 @@ function appendToSearch(text) {
     updateSearchPage();
 }
 
+// Toggle Google Apps Launcher Menu
+function toggleGoogleApps(force) {
+    if (!googleAppsBtn || !googleAppsMenu) return;
+    const shouldOpen = typeof force === 'boolean' ? force : googleAppsMenu.hidden;
+    googleAppsMenu.hidden = !shouldOpen;
+    googleAppsBtn.setAttribute('aria-expanded', String(shouldOpen));
+}
+
+if (googleAppsBtn && googleAppsMenu) {
+    googleAppsBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        toggleGoogleApps();
+    });
+
+    document.addEventListener('click', event => {
+        if (!googleAppsMenu.hidden && !googleAppsMenu.contains(event.target) && !googleAppsBtn.contains(event.target)) {
+            toggleGoogleApps(false);
+        }
+    });
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !googleAppsMenu.hidden) {
+            toggleGoogleApps(false);
+            googleAppsBtn.focus();
+        }
+    });
+}
+
 // Type anywhere on the page to start searching.
 document.addEventListener('keydown', event => {
     if (loaderOverlay.classList.contains('visible')) {
         if (!event.ctrlKey && !event.metaKey) event.preventDefault();
         return;
     }
-    if (shortcutDialog.open || event.isComposing || isInteractiveTarget(event.target)) return;
+    if (shortcutDialog.open || (googleAppsMenu && !googleAppsMenu.hidden) || event.isComposing || isInteractiveTarget(event.target)) return;
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
         event.preventDefault();
         appendToSearch(event.key);
@@ -164,7 +194,7 @@ document.addEventListener('keydown', event => {
 });
 
 document.addEventListener('paste', event => {
-    if (loaderOverlay.classList.contains('visible') || shortcutDialog.open || isInteractiveTarget(event.target)) return;
+    if (loaderOverlay.classList.contains('visible') || shortcutDialog.open || (googleAppsMenu && !googleAppsMenu.hidden) || isInteractiveTarget(event.target)) return;
     const text = event.clipboardData?.getData('text/plain');
     if (!text) return;
     event.preventDefault();

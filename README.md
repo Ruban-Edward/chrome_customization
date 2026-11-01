@@ -6,6 +6,7 @@ A sleek, fast, and privacy-focused Chrome New Tab extension featuring quick link
 
 ## 🌟 Features
 
+- **Google Apps Launcher**: Top-right corner menu with direct shortcuts to 12 Google apps (Search, Gmail, Drive, Docs, Sheets, Slides, Calendar, Meet, YouTube, Maps, Photos, Translate) plus direct Gmail and Images links.
 - **Quick links**: Add, remove, and customize shortcuts, including custom names, URLs, and local or site icons.
 - **Search and clock**: Search with Google, Bing, or DuckDuckGo with animated loader and view current time, date, and greeting.
 - **100% Offline & Private**: Zero background network requests; all fonts and resources are stored locally.
